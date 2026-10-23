@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>BLOG JEIRSA</title>
+        <title>IRSO BLOG</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -15,7 +15,7 @@
     <body class="min-h-screen bg-gray-200 font-sans antialiased">
         <header class="bg-white p-4 shadow-xl" x-data="{ open: false }">
             <div class="mx-auto flex max-w-screen-xl items-center justify-between">
-                <a href="{{ route('blog.index') }}" class="text-xl font-semibold">BLOG JEIRSA</a>
+                <a href="{{ route('blog.index') }}" class="text-xl font-semibold">IRSO BLOG</a>
 
                 <button type="button" class="md:hidden" x-on:click="open = ! open">
                     <span class="sr-only">Abrir menú</span>
@@ -112,7 +112,7 @@
         </main>
 
         <footer class="bg-gray-900 py-4">
-            <p class="text-center text-lg text-white">&copy; BLOG JEIRSA</p>
+            <p class="text-center text-lg text-white">&copy; IRSO BLOG</p>
         </footer>
 
         @livewireScripts

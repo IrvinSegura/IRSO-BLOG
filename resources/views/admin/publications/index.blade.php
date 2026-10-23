@@ -23,7 +23,7 @@
                             <dt class="font-semibold text-gray-600">Publicado</dt>
                             <dd>{{ $publication->created_at?->locale('es')->diffForHumans() }}</dd>
                             <dt class="font-semibold text-gray-600">Empresa</dt>
-                            <dd>BLOG JEIRSA</dd>
+                            <dd>IRSO BLOG</dd>
                             <dt class="font-semibold text-gray-600">Id publicación</dt>
                             <dd>{{ $publication->id }}</dd>
                         </dl>

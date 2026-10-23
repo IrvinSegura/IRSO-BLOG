@@ -1,48 +1,38 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-layouts.auth :title="__('Inicia sesión')" :subtitle="__('Ingresa con tu cuenta o con tus credenciales.')">
+    <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
+        @csrf
 
-        <x-validation-errors class="mb-4" />
+        <x-auth-input name="email" type="email" icon="mail" :label="__('Correo')" :value="old('email')"
+            placeholder="tu@correo.com" required autofocus autocomplete="username" />
 
-        @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-                {{ $value }}
-            </div>
-        @endsession
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div>
-                <x-label for="email" value="{{ __('Correo') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Contraseña') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            </div>
-
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Recuérdame') }}</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('register'))
-                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('register') }}">
-                        {{ __('¿Aún no tienes cuenta? Regístrate') }}
+        <x-auth-input name="password" type="password" icon="lock" :label="__('Contraseña')"
+            placeholder="••••••••" required autocomplete="current-password">
+            @if (Route::has('password.request'))
+                <x-slot name="aside">
+                    <a href="{{ route('password.request') }}" class="text-sm font-medium text-yellow-700 hover:text-yellow-800">
+                        {{ __('¿Olvidaste tu contraseña?') }}
                     </a>
-                @endif
+                </x-slot>
+            @endif
+        </x-auth-input>
 
-                <x-button class="ms-4">
-                    {{ __('Iniciar sesión') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+        <label for="remember_me" class="flex items-center gap-2 text-sm text-gray-600">
+            <input id="remember_me" type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900/20" />
+            {{ __('Recuérdame') }}
+        </label>
+
+        <x-social-login-buttons class="py-1" />
+
+        <button type="submit"
+            class="flex w-full items-center justify-center rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 active:bg-black">
+            {{ __('Iniciar sesión') }}
+        </button>
+    </form>
+
+    @if (Route::has('register'))
+        <p class="mt-8 text-center text-sm text-gray-500">
+            {{ __('¿Aún no tienes cuenta?') }}
+            <a href="{{ route('register') }}" class="font-semibold text-gray-900 hover:underline">{{ __('Regístrate') }}</a>
+        </p>
+    @endif
+</x-layouts.auth>

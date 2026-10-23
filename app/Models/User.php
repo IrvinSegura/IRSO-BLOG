@@ -80,6 +80,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the Google, Microsoft and Facebook accounts linked to the user.
+     */
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
+    /**
      * Get the publications written by the user.
      */
     public function publications(): HasMany
