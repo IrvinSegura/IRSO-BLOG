@@ -6,12 +6,27 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\UserController;
+use App\Models\SocialAccount;
 use Illuminate\Support\Facades\Route;
 
 // Login, registration and profile routes are registered by Fortify and Jetstream.
 Route::redirect('/', '/dashboard');
+
+Route::middleware('guest')->prefix('auth/{provider}')->whereIn('provider', SocialAccount::PROVIDERS)->name('social.')->group(function () {
+    Route::get('redirect', [SocialiteController::class, 'redirect'])->name('redirect');
+    Route::get('callback', [SocialiteController::class, 'callback'])->name('callback');
+});
+
+// Confirms the email by code when the provider did not share a verified one.
+Route::middleware('guest')->prefix('auth/social')->name('social.')->group(function () {
+    Route::get('email', [SocialiteController::class, 'emailForm'])->name('email');
+    Route::post('email', [SocialiteController::class, 'sendCode'])->middleware('throttle:5,1')->name('email.send');
+    Route::get('verify', [SocialiteController::class, 'codeForm'])->name('verify');
+    Route::post('verify', [SocialiteController::class, 'verifyCode'])->middleware('throttle:10,1')->name('verify.check');
+});
 
 Route::middleware([
     'auth:sanctum',
