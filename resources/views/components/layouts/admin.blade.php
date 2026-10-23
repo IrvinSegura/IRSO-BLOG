@@ -38,7 +38,7 @@
             >
                 <a href="{{ route('dashboard') }}" class="flex h-16 items-center gap-2 px-6 text-lg font-semibold text-white">
                     <x-application-mark class="block h-8 w-auto" />
-                    BLOG JEIRSA
+                    IRSO BLOG
                 </a>
 
                 <nav class="space-y-1 px-3 py-4">

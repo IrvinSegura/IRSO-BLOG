@@ -4,7 +4,7 @@
             <div class="flex items-center gap-4">
                 <a href="{{ route('dashboard') }}" class="flex flex-shrink-0 items-center gap-2 text-white">
                     <x-application-mark class="block h-8 w-auto" />
-                    <span class="hidden font-semibold sm:inline">BLOG JEIRSA</span>
+                    <span class="hidden font-semibold sm:inline">IRSO BLOG</span>
                 </a>
 
                 <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Panel</a>
