@@ -17,6 +17,11 @@ class Publication extends Model
 
     public const STATUS_PUBLISHED = 'publicado';
 
+    /**
+     * Largest cover image accepted, in kilobytes (PHP allows up to 8 MB per upload).
+     */
+    public const MAX_IMAGE_KB = 5120;
+
     protected $table = 'publications';
 
     /**
