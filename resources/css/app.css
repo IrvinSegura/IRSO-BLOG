@@ -5,3 +5,8 @@
 [x-cloak] {
     display: none;
 }
+
+/* Native controls (scrollbars, date pickers, autofill) follow the panel theme. */
+.dark {
+    color-scheme: dark;
+}

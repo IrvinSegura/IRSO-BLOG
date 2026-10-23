@@ -4,7 +4,8 @@ import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    // Dark styles only apply with a "dark" class, so every page keeps the same light theme.
+    // Dark styles only apply with a "dark" class, which <x-theme-script /> adds on the panel,
+    // the blog and the 403 page when the user picks the dark theme; login stays light.
     darkMode: 'class',
 
     content: [
