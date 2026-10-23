@@ -57,7 +57,7 @@ class SocialiteAuthenticationTest extends TestCase
         $user = User::where('email', 'nuevo@gmail.com')->firstOrFail();
 
         $this->assertAuthenticatedAs($user);
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('blog.index', absolute: false));
         $this->assertSame(Role::USER, (int) $user->rol);
         $this->assertNotNull($user->email_verified_at);
         $this->assertDatabaseHas('social_accounts', ['user_id' => $user->id, 'provider' => 'google', 'provider_id' => '123']);
@@ -119,7 +119,8 @@ class SocialiteAuthenticationTest extends TestCase
         $code = $this->requestCode('nuevo@gmail.com');
 
         $this->get(route('social.verify'))->assertOk()->assertSee('nuevo@gmail.com');
-        $this->post(route('social.verify.check'), ['code' => $code]);
+        $this->post(route('social.verify.check'), ['code' => $code])
+            ->assertRedirect(route('blog.index', absolute: false));
 
         $user = User::where('email', 'nuevo@gmail.com')->firstOrFail();
         $this->assertAuthenticatedAs($user);

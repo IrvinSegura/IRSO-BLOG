@@ -230,6 +230,8 @@ class SocialiteController extends Controller
             return redirect()->route('social.email');
         }
 
+        $isNewAccount = $user === null;
+
         $user = DB::transaction(function () use ($user, $profile, $email, $emailVerified) {
             $user ??= User::forceCreate([
                 'name' => filled($profile['name']) ? trim($profile['name']) : Str::before($email, '@'),
@@ -249,13 +251,14 @@ class SocialiteController extends Controller
             return $user;
         });
 
-        return $this->login($request, $user);
+        // New accounts start on the blog, like people who register with the form.
+        return $this->login($request, $user, $isNewAccount ? route('blog.index') : null);
     }
 
     /**
      * Start the session, or the two-factor challenge when the user enabled it.
      */
-    private function login(Request $request, User $user): RedirectResponse
+    private function login(Request $request, User $user, ?string $redirectTo = null): RedirectResponse
     {
         if ($user->trashed()) {
             return $this->failed(__('Tu cuenta está deshabilitada. Contacta a un administrador.'));
@@ -274,7 +277,7 @@ class SocialiteController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(config('fortify.home'));
+        return $redirectTo ? redirect($redirectTo) : redirect()->intended(config('fortify.home'));
     }
 
     /**
