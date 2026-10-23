@@ -2,113 +2,28 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class CategorySeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Default categories of the blog.
+     *
+     * @var array<int, string>
+     */
+    private const NAMES = [
+        'Deportes', 'Entretenimiento', 'Política', 'Economía', 'Salud', 'Ciencia', 'Educación', 'Cultura',
+        'Medio Ambiente', 'Mundo', 'Sociedad', 'Viajes', 'Estilo de vida', 'Música', 'Arte', 'Gastronomía',
+    ];
+
+    /**
+     * Run the database seeds. Safe to run again: existing categories are not duplicated.
      */
     public function run(): void
     {
-        //
-
-        DB::table('category')->insert([
-            'name' => 'Deportes',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Entretenimiento',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Política',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Economía',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Salud',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Ciencia',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Educación',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Cultura',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Medio Ambiente',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Mundo',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Sociedad',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Viajes',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Estilo de vida',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Música',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Arte',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('category')->insert([
-            'name' => 'Gastronomía',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
+        foreach (self::NAMES as $name) {
+            Category::withTrashed()->firstOrCreate(['name' => $name]);
+        }
     }
 }

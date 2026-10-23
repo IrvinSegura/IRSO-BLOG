@@ -12,14 +12,22 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     /**
-     * Show the active users.
+     * Show the active users, optionally filtered by name or email.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::with('role')->orderBy('id')->paginate(10);
+        $search = trim((string) $request->query('search'));
+
+        $users = User::with(['role', 'socialAccounts'])
+            ->when($search !== '', fn ($query) => $query->where(fn ($query) => $query
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")))
+            ->orderBy('id')
+            ->paginate(10)
+            ->withQueryString();
         $roles = Role::orderBy('id')->get();
 
-        return view('admin.users.index', compact('users', 'roles'));
+        return view('admin.users.index', compact('users', 'roles', 'search'));
     }
 
     /**

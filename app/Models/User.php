@@ -80,6 +80,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Whether the user has any of the given role ids (see the Role constants).
+     */
+    public function hasRole(int ...$roles): bool
+    {
+        return in_array((int) $this->rol, $roles, true);
+    }
+
+    /**
+     * Whether the user can manage users, roles and the recycle bin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(Role::ADMIN);
+    }
+
+    /**
+     * Whether the user can manage categories, statistics and exports.
+     */
+    public function canManageContent(): bool
+    {
+        return $this->hasRole(Role::ADMIN, Role::EDITOR);
+    }
+
+    /**
      * Get the Google, Microsoft and Facebook accounts linked to the user.
      */
     public function socialAccounts(): HasMany
