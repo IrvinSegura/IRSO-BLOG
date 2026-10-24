@@ -288,23 +288,82 @@ La suite cubre la autenticación (incluido el login social), los permisos por ro
 
 ## Estructura del proyecto
 
+No se muestran `vendor/`, `node_modules/` ni `public/build/`, que se generan con `composer install`, `npm install` y `npm run build`.
+
 ```text
-app/
-├── Http/Controllers/        # Blog, panel, publicaciones, usuarios, roles, categorías, login social
-├── Http/Middleware/         # EnsureUserHasRole (role:admin,editor) y RedirectToCanonicalHost
-├── Models/                  # User, Role, Publication, Category, Comment, SocialAccount…
-└── Policies/                # PublicationPolicy (quién puede editar una publicación)
-database/
-├── migrations/
-└── seeders/                 # Roles, categorías, cuentas demo y publicaciones de ejemplo
-resources/
-├── views/
-│   ├── admin/               # Módulos del panel
-│   ├── blog/                # Blog público
-│   └── components/admin/    # Botones, campos, selector, modales, tablas, iconos…
-└── js/statistics.js         # Gráficas del módulo de estadísticas
-docs/screenshots/            # Imágenes de este README
-tests/Feature/               # Pruebas de la aplicación
+IRSO-BLOG/
+├── app/
+│   ├── Actions/
+│   │   ├── Fortify/              # Registro, cambio y restablecimiento de contraseña, edición de perfil
+│   │   └── Jetstream/            # Eliminación de cuentas
+│   ├── Http/
+│   │   ├── Controllers/          # Dashboard, Blog, Publication, Comment, Category, Role, User,
+│   │   │                         # Statistics, RecycleBin, Socialite (login social) y más
+│   │   ├── Middleware/           # EnsureUserHasRole (role:admin,editor) y RedirectToCanonicalHost
+│   │   └── Responses/            # RegisterResponse: manda al blog después de registrarse
+│   ├── Livewire/                 # Navigation (barra de Jetstream)
+│   ├── Models/                   # User, Role, Publication, Category, Comment, Reaction, Tag,
+│   │                             # Complaint, SavedPublication, TagPublication, SocialAccount
+│   ├── Notifications/            # SocialLoginCode: código para confirmar el correo
+│   ├── Policies/                 # PublicationPolicy: quién puede editar una publicación
+│   ├── Providers/                # AppServiceProvider, FortifyServiceProvider, JetstreamServiceProvider
+│   └── View/Components/          # AppLayout y GuestLayout
+├── bootstrap/
+│   └── app.php                   # Rutas, middleware (alias "role") y manejo de excepciones
+├── config/                       # app, auth, database, fortify, jetstream, mail, services (claves OAuth)…
+├── database/
+│   ├── factories/                # UserFactory para las pruebas
+│   ├── migrations/               # Tablas de usuarios, publicaciones, categorías, roles, comentarios,
+│   │                             # reacciones, etiquetas, cuentas sociales y la unión de duplicados
+│   └── seeders/                  # Roles, categorías, cuentas demo y publicaciones de ejemplo
+├── docs/
+│   └── screenshots/              # Imágenes de este README
+├── public/
+│   ├── img/                      # Iconos de reacciones
+│   └── index.php                 # Punto de entrada de la aplicación
+├── resources/
+│   ├── css/app.css               # Tailwind
+│   ├── js/
+│   │   ├── app.js
+│   │   └── statistics.js         # Gráficas del módulo de estadísticas (Chart.js)
+│   ├── markdown/                 # Términos y política de privacidad
+│   └── views/
+│       ├── admin/                # Módulos del panel
+│       │   ├── categories/       # Categorías
+│       │   ├── publications/     # Todas, mis publicaciones, crear, editar y formulario compartido
+│       │   ├── roles/            # Roles
+│       │   ├── users/            # Control de usuarios y usuarios ocultos
+│       │   ├── recycle-bin.blade.php
+│       │   └── statistics.blade.php
+│       ├── api/                  # Tokens de API (Jetstream)
+│       ├── auth/                 # Login, registro, recuperar contraseña y confirmación por código
+│       ├── blog/                 # Blog público
+│       ├── components/
+│       │   ├── admin/            # Botones, campos, selector, modales, tablas, iconos, insignias…
+│       │   ├── layouts/          # Layouts del panel (admin) y de login y registro (auth)
+│       │   ├── theme-script.blade.php
+│       │   └── theme-toggle.blade.php
+│       ├── emails/               # Plantillas de correo
+│       ├── errors/               # Página 403
+│       ├── layouts/              # Layouts de Jetstream (app y guest)
+│       ├── profile/              # Mi perfil (Jetstream)
+│       ├── vendor/pagination/    # Paginación en español
+│       └── dashboard.blade.php   # Panel de inicio
+├── routes/
+│   ├── web.php                   # Blog, panel, login social y rutas protegidas por rol
+│   ├── api.php
+│   └── console.php
+├── storage/                      # Logs, caché, sesiones y archivos subidos (storage/app/public)
+├── tests/
+│   ├── Feature/                  # Autenticación, login social, roles, publicaciones, seeders…
+│   └── Unit/
+├── .env.example                  # Variables de entorno de ejemplo (incluye las del login social)
+├── artisan
+├── composer.json                 # Dependencias de PHP
+├── package.json                  # Dependencias de JavaScript
+├── phpunit.xml
+├── tailwind.config.js            # Tema de Tailwind (modo oscuro por clase)
+└── vite.config.js
 ```
 
 ## Licencia
