@@ -2,24 +2,23 @@
 
 namespace Database\Seeders;
 
+use App\Models\Publication;
+use App\Models\Reaction;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class ReactionSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * A sample "like" from the administrator. Safe to run again.
      */
     public function run(): void
     {
-        //
-        date_default_timezone_set('America/Mexico_City');
-        DB::table('reaction')->insert([
-            'publication_id' => 1,
-            'user_id' => 1,
-            'type_reaction' => 'like',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $publication = Publication::where('slug', 'el-nuevo-iphone-12')->first();
+        $admin = User::where('email', 'admin@irsoblog.test')->first();
+
+        if ($publication && $admin) {
+            Reaction::firstOrCreate(['publication_id' => $publication->id, 'user_id' => $admin->id, 'type_reaction' => 'like']);
+        }
     }
 }
