@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Publication;
+use App\Notifications\CommentReceived;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -17,10 +18,17 @@ class CommentController extends Controller
             'comment' => ['required', 'string', 'max:255'],
         ]);
 
-        $publication->comments()->create([
+        $comment = $publication->comments()->create([
             ...$data,
             'user_id' => $request->user()->id,
         ]);
+
+        $author = $publication->user;
+
+        // Authors answering on their own publication don't need to be told.
+        if ($author && ! $author->trashed() && ! $author->is($request->user())) {
+            $author->notifyBestEffort(new CommentReceived($publication, $comment, $request->user()));
+        }
 
         return back()->with('success', 'Comentario publicado');
     }

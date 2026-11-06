@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\SocialAccount;
 use App\Models\User;
 use App\Notifications\SocialLoginCode;
+use App\Notifications\WelcomeEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -149,7 +150,7 @@ class SocialiteController extends Controller
 
         $request->session()->put(self::PENDING.'.email', $email);
         $request->session()->put(self::PENDING.'.code', Hash::make($code));
-        $request->session()->put(self::PENDING.'.expires_at', now()->addMinutes(10)->getTimestamp());
+        $request->session()->put(self::PENDING.'.expires_at', now()->addMinutes(SocialLoginCode::EXPIRES_IN_MINUTES)->getTimestamp());
         $request->session()->put(self::PENDING.'.attempts', 0);
 
         Notification::route('mail', $email)->notify(new SocialLoginCode($code));
@@ -250,6 +251,10 @@ class SocialiteController extends Controller
 
             return $user;
         });
+
+        if ($isNewAccount) {
+            $user->notifyBestEffort(new WelcomeEmail);
+        }
 
         // New accounts start on the blog, like people who register with the form.
         return $this->login($request, $user, $isNewAccount ? route('blog.index') : null);

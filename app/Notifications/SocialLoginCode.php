@@ -2,12 +2,17 @@
 
 namespace App\Notifications;
 
+use App\Emails\BlogEmails;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
 class SocialLoginCode extends Notification
 {
+    /**
+     * How long the code works, in minutes.
+     */
+    public const EXPIRES_IN_MINUTES = 10;
+
     /**
      * Create a new notification instance.
      */
@@ -31,12 +36,6 @@ class SocialLoginCode extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->subject(__('Tu código de verificación: :code', ['code' => $this->code]))
-            ->greeting(__('¡Hola!'))
-            ->line(__('Usa este código para confirmar tu correo y terminar de entrar a :app:', ['app' => config('app.name')]))
-            ->line(new HtmlString('<strong style="font-size: 28px; letter-spacing: 6px;">'.$this->code.'</strong>'))
-            ->line(__('El código vence en 10 minutos. Si no intentaste entrar, ignora este correo.'))
-            ->salutation(__('Saludos, :app', ['app' => config('app.name')]));
+        return BlogEmails::socialLoginCode($this->code, self::EXPIRES_IN_MINUTES)->toMail();
     }
 }
