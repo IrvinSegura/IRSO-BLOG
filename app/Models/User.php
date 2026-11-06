@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -117,5 +118,14 @@ class User extends Authenticatable
     public function publications(): HasMany
     {
         return $this->hasMany(Publication::class);
+    }
+
+    /**
+     * Send an email the user is not waiting for: if the mail server fails, the error is logged and whatever the user
+     * was doing (registering, commenting...) still works.
+     */
+    public function notifyBestEffort(Notification $notification): void
+    {
+        rescue(fn () => $this->notify($notification));
     }
 }

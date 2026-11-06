@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\WelcomeEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -28,11 +29,15 @@ class CreateNewUser implements CreatesNewUsers
         ])->validate();
 
         // "rol" is not mass assignable and the column has no default value.
-        return User::forceCreate([
+        $user = User::forceCreate([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'rol' => Role::USER,
         ]);
+
+        $user->notifyBestEffort(new WelcomeEmail);
+
+        return $user;
     }
 }
