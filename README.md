@@ -28,6 +28,7 @@ Plataforma de blog hecha con **Laravel 13**, **Jetstream (Livewire)** y **Tailwi
 - **Estadísticas** con gráficas de Chart.js: publicaciones por mes, usuarios por rol y categorías más usadas.
 - **Papelera de reciclaje** para restaurar usuarios, categorías y roles eliminados.
 - **Inicio de sesión social** con Google, Microsoft y Facebook. Si el proveedor no comparte un correo verificado, se confirma con un código enviado por correo.
+- **Correos con diseño propio** para cada motivo: restablecer contraseña, código de verificación, bienvenida, contraseña cambiada y comentario en tu publicación.
 - **Tema claro y oscuro** compartido entre el panel y el blog; la preferencia se recuerda.
 
 ## Tecnologías
@@ -267,13 +268,35 @@ Registra en la consola de cada proveedor la URL de retorno, con el mismo dominio
 
 Con `MAIL_MAILER=log`, los correos (recuperar contraseña o código de verificación) se escriben en `storage/logs/laravel.log`. Para enviarlos de verdad, configura un servidor SMTP en las variables `MAIL_*`.
 
+### Correos
+
+Cada correo sale en dos formas, HTML (tablas y estilos en línea) y texto plano, con los valores escapados. Los textos están en `lang/es/emails.php` y el diseño en `resources/views/emails/layout.blade.php`.
+
+| Motivo | Cuándo se envía |
+|---|---|
+| Restablecer contraseña | Al pedirlo en "¿Olvidaste tu contraseña?" |
+| Código de verificación | En el login social, si el proveedor no comparte un correo verificado |
+| Bienvenida | Al crear una cuenta, con el formulario o con un proveedor |
+| Contraseña cambiada | Al cambiarla desde el perfil o al restablecerla |
+| Comentario recibido | Cuando otra persona comenta una publicación tuya |
+
+Para verlos en el navegador sin enviar nada:
+
+```bash
+php artisan emails:preview
+```
+
+Deja un `index.html` y cada diseño en `storage/app/email-previews/`. Para ver el envío real en local, usa `MAIL_MAILER=log` (quedan en `storage/logs/laravel.log`) o un capturador como Mailpit. El remitente sale de `MAIL_FROM_ADDRESS` y `MAIL_FROM_NAME`, así que define también `APP_NAME="IRSO BLOG"`.
+
+La bienvenida, el aviso de contraseña y el de comentario no detienen a quien está usando la app: si el servidor de correo falla, el error queda en el log y la acción termina bien.
+
 ## Pruebas
 
 ```bash
 php artisan test
 ```
 
-La suite cubre la autenticación (incluido el login social), los permisos por rol, el módulo de publicaciones, la redirección a `APP_URL` y los seeders.
+La suite cubre la autenticación (incluido el login social), los permisos por rol, el módulo de publicaciones, los correos, la redirección a `APP_URL` y los seeders.
 
 ## Solución de problemas
 
@@ -304,7 +327,9 @@ IRSO-BLOG/
 │   ├── Livewire/                 # Navigation (barra de Jetstream)
 │   ├── Models/                   # User, Role, Publication, Category, Comment, Reaction, Tag,
 │   │                             # Complaint, SavedPublication, TagPublication, SocialAccount
-│   ├── Notifications/            # SocialLoginCode: código para confirmar el correo
+│   ├── Console/Commands/         # PreviewEmails: guarda los correos para verlos en el navegador
+│   ├── Emails/                   # BlogEmails (un diseño por motivo), EmailDraft, EmailPreviews
+│   ├── Notifications/            # WelcomeEmail, PasswordChanged, CommentReceived, SocialLoginCode
 │   ├── Policies/                 # PublicationPolicy: quién puede editar una publicación
 │   ├── Providers/                # AppServiceProvider, FortifyServiceProvider, JetstreamServiceProvider
 │   └── View/Components/          # AppLayout y GuestLayout
