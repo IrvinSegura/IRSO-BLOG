@@ -20,7 +20,13 @@ Plataforma de blog hecha con **Laravel 13**, **Jetstream (Livewire)** y **Tailwi
 
 ## Características
 
-- **Blog público:** historias destacadas (las más comentadas), sección "Lo último" con la publicación más reciente primero y categorías con contador.
+- **Blog público:** historias destacadas (las más comentadas y con más reacciones), sección "Lo último" paginada y categorías con contador.
+- **Búsqueda y filtros:** busca por título, descripción o autor desde la cabecera y filtra por categoría con un clic. Los dos filtros se combinan.
+- **Página de cada publicación:** portada, tiempo de lectura, comentarios y lecturas relacionadas de la misma categoría. La dirección lleva el *slug* (`/blog/5/mi-titulo`) y corrige sola los enlaces viejos.
+- **Reacciones con emoji** (❤️ 🔥 💡 😂 👏), una por lector, al estilo de la app Nexus. Se actualizan al instante sin recargar y también funcionan sin JavaScript.
+- **Guardados:** cada lector arma su lista de lectura y la consulta en `/blog/guardados`.
+- **Reportes y moderación:** los lectores reportan una publicación con un motivo, una sola vez. Administradores y editores la revisan en **Reportes**, donde pueden descartarla, marcarla como resuelta o retirar la publicación y restaurarla después.
+- **Portadas optimizadas:** al subirlas se reducen a 1600 px y se recomprimen (JPEG, o WebP si tienen transparencia), corrigiendo la rotación de las fotos del celular.
 - **Panel de administración:** layout con menú lateral que se puede ocultar, búsqueda de usuarios, modales de confirmación, avisos tipo *toast* y paginación en español.
 - **Permisos por rol:** Administrador, Editor y Usuario. Cada rol ve solo lo que puede usar, y el servidor también bloquea el acceso.
 - **Mis publicaciones:** cada usuario crea, edita y responde los comentarios de sus propias publicaciones.
@@ -163,8 +169,9 @@ Quien se registra por su cuenta, o entra por primera vez con Google, Microsoft o
 |---|:-:|:-:|:-:|
 | Panel de inicio, blog y mi perfil | ✅ | ✅ | ✅ |
 | Mis publicaciones (crear, editar y responder comentarios) | ✅ | ✅ | ✅ |
+| Reaccionar, guardar y reportar publicaciones | ✅ | ✅ | ✅ |
 | Todas las publicaciones, editar las de otros y exportar JSON | ❌ | ✅ | ✅ |
-| Categorías y estadísticas | ❌ | ✅ | ✅ |
+| Categorías, estadísticas y reportes | ❌ | ✅ | ✅ |
 | Usuarios, usuarios ocultos, roles y papelera | ❌ | ❌ | ✅ |
 
 Los permisos se aplican en el servidor con el middleware `role` y la política `PublicationPolicy`, no solo ocultando enlaces. Quien abra una sección sin permiso ve una página **403**.
@@ -215,7 +222,7 @@ Si un editor intenta entrar a una sección de administrador, como `/admin/users`
 
 ### Usuario
 
-Solo ve y administra **sus propias publicaciones**. El menú lateral muestra únicamente *Panel*, *Mis publicaciones* y *Crear publicación*.
+Solo ve y administra **sus propias publicaciones**. El menú lateral muestra únicamente *Panel*, *Mis publicaciones*, *Crear publicación* y *Guardados*.
 
 | Panel del usuario | Mis publicaciones (con comentarios) |
 |---|---|
