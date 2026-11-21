@@ -10,15 +10,30 @@ use Illuminate\Database\Seeder;
 class ReactionSeeder extends Seeder
 {
     /**
-     * A sample "like" from the administrator. Safe to run again.
+     * Sample reactions from the demo accounts: [publication slug, reader email, reaction].
+     */
+    public const SAMPLES = [
+        ['el-nuevo-iphone-12', 'admin@irsoblog.test', 'love'],
+        ['el-nuevo-iphone-12', 'usuario@irsoblog.test', 'fire'],
+        ['mis-primeros-pasos-en-irso-blog', 'editor@irsoblog.test', 'clap'],
+        ['una-ruta-por-la-huasteca-potosina', 'admin@irsoblog.test', 'love'],
+    ];
+
+    /**
+     * Safe to run again: each reader keeps a single reaction per publication.
      */
     public function run(): void
     {
-        $publication = Publication::where('slug', 'el-nuevo-iphone-12')->first();
-        $admin = User::where('email', 'admin@irsoblog.test')->first();
+        foreach (self::SAMPLES as [$slug, $email, $type]) {
+            $publication = Publication::where('slug', $slug)->first();
+            $user = User::where('email', $email)->first();
 
-        if ($publication && $admin) {
-            Reaction::firstOrCreate(['publication_id' => $publication->id, 'user_id' => $admin->id, 'type_reaction' => 'like']);
+            if ($publication && $user) {
+                Reaction::updateOrCreate(
+                    ['publication_id' => $publication->id, 'user_id' => $user->id],
+                    ['type_reaction' => $type],
+                );
+            }
         }
     }
 }
