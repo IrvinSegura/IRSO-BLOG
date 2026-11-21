@@ -3,10 +3,13 @@
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublicationController;
+use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SavedPublicationController;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\UserController;
@@ -37,6 +40,15 @@ Route::middleware([
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
+    Route::get('blog/guardados', [BlogController::class, 'saved'])->name('blog.saved');
+    Route::get('blog/{publication}/{slug?}', [BlogController::class, 'show'])->whereNumber('publication')->name('blog.show');
+
+    // Readers: react, save for later and report. Throttled so a script cannot flood the tables.
+    Route::middleware('throttle:60,1')->prefix('blog/{publication}')->whereNumber('publication')->name('blog.')->group(function () {
+        Route::post('reaction', [ReactionController::class, 'store'])->name('reaction');
+        Route::post('save', [SavedPublicationController::class, 'toggle'])->name('save');
+        Route::post('report', [ComplaintController::class, 'store'])->middleware('throttle:10,1')->name('report');
+    });
 
     Route::prefix('admin')->name('admin.')->group(function () {
         // Every role: write publications and comment on them.
@@ -48,6 +60,10 @@ Route::middleware([
         // Administrators and editors: organize content and see how it performs.
         Route::middleware('role:admin,editor')->group(function () {
             Route::get('statistics', [StatisticsController::class, 'index'])->name('statistics');
+
+            Route::get('reports', [ComplaintController::class, 'index'])->name('reports.index');
+            Route::patch('reports/{complaint}', [ComplaintController::class, 'update'])->name('reports.update');
+            Route::patch('reports/{complaint}/restore-publication', [ComplaintController::class, 'restorePublication'])->name('reports.restore-publication');
             Route::get('publications/export', [PublicationController::class, 'export'])->name('publications.export');
 
             Route::patch('categories/{category}/restore', [CategoryController::class, 'restore'])->withTrashed()->name('categories.restore');
