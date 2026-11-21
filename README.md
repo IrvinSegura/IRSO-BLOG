@@ -186,6 +186,14 @@ Los permisos se aplican en el servidor con el middleware `role` y la política `
 
 Login y registro con correo, o con Google, Microsoft y Facebook.
 
+### Blog
+
+Todos los roles leen el blog: buscan desde la cabecera, filtran por categoría, reaccionan con emoji, guardan publicaciones para después y reportan las que no deberían estar.
+
+| Página de una publicación (reacciones, guardar, compartir, reportar y comentarios) | Guardados |
+|---|---|
+| ![Página de una publicación](docs/screenshots/blog-publicacion.png) | ![Guardados](docs/screenshots/blog-guardados.png) |
+
 ### Administrador
 
 **Panel de inicio:** totales del blog, publicaciones recientes, usuarios nuevos y categorías más usadas.
@@ -208,9 +216,13 @@ Login y registro con correo, o con Google, Microsoft y Facebook.
 
 ![Publicaciones](docs/screenshots/admin-publicaciones.png)
 
+**Reportes:** la cola de moderación con pestañas de pendientes, resueltos y descartados. Desde aquí se descarta un reporte, se marca como resuelto o se retira la publicación (y se puede restaurar después).
+
+![Reportes](docs/screenshots/admin-reportes.png)
+
 ### Editor
 
-Gestiona el contenido de todo el blog (publicaciones, categorías y estadísticas), pero no administra personas.
+Gestiona el contenido de todo el blog (publicaciones, categorías, estadísticas y reportes), pero no administra personas.
 
 | Panel del editor | Publicaciones |
 |---|---|
@@ -303,7 +315,7 @@ La bienvenida, el aviso de contraseña y el de comentario no detienen a quien es
 php artisan test
 ```
 
-La suite cubre la autenticación (incluido el login social), los permisos por rol, el módulo de publicaciones, los correos, la redirección a `APP_URL` y los seeders.
+La suite cubre la autenticación (incluido el login social), los permisos por rol, el módulo de publicaciones, el blog (búsqueda, reacciones, guardados, reportes y moderación), la optimización de portadas, los correos, la redirección a `APP_URL` y los seeders.
 
 ## Solución de problemas
 
@@ -328,7 +340,8 @@ IRSO-BLOG/
 │   │   └── Jetstream/            # Eliminación de cuentas
 │   ├── Http/
 │   │   ├── Controllers/          # Dashboard, Blog, Publication, Comment, Category, Role, User,
-│   │   │                         # Statistics, RecycleBin, Socialite (login social) y más
+│   │   │                         # Statistics, RecycleBin, Reaction, SavedPublication,
+│   │   │                         # Complaint (reportes), Socialite (login social) y más
 │   │   ├── Middleware/           # EnsureUserHasRole (role:admin,editor) y RedirectToCanonicalHost
 │   │   └── Responses/            # RegisterResponse: manda al blog después de registrarse
 │   ├── Livewire/                 # Navigation (barra de Jetstream)
@@ -339,6 +352,7 @@ IRSO-BLOG/
 │   ├── Notifications/            # WelcomeEmail, PasswordChanged, CommentReceived, SocialLoginCode
 │   ├── Policies/                 # PublicationPolicy: quién puede editar una publicación
 │   ├── Providers/                # AppServiceProvider, FortifyServiceProvider, JetstreamServiceProvider
+│   ├── Support/                  # CoverImage: reduce y recomprime las portadas al subirlas
 │   └── View/Components/          # AppLayout y GuestLayout
 ├── bootstrap/
 │   └── app.php                   # Rutas, middleware (alias "role") y manejo de excepciones
@@ -346,15 +360,17 @@ IRSO-BLOG/
 ├── database/
 │   ├── factories/                # UserFactory para las pruebas
 │   ├── migrations/               # Tablas de usuarios, publicaciones, categorías, roles, comentarios,
-│   │                             # reacciones, etiquetas, cuentas sociales y la unión de duplicados
-│   └── seeders/                  # Roles, categorías, cuentas demo y publicaciones de ejemplo
+│   │                             # reacciones, etiquetas, cuentas sociales, la unión de duplicados
+│   │                             # y reacciones, guardados y reportes por publicación
+│   └── seeders/                  # Roles, categorías, cuentas demo, publicaciones, reacciones,
+│                                 # guardados y un reporte de ejemplo
 ├── docs/
 │   └── screenshots/              # Imágenes de este README
 ├── public/
 │   ├── img/                      # Iconos de reacciones
 │   └── index.php                 # Punto de entrada de la aplicación
 ├── resources/
-│   ├── css/app.css               # Tailwind
+│   ├── css/app.css               # Tailwind y animaciones de las tarjetas y reacciones
 │   ├── js/
 │   │   ├── app.js
 │   │   └── statistics.js         # Gráficas del módulo de estadísticas (Chart.js)
@@ -363,16 +379,18 @@ IRSO-BLOG/
 │       ├── admin/                # Módulos del panel
 │       │   ├── categories/       # Categorías
 │       │   ├── publications/     # Todas, mis publicaciones, crear, editar y formulario compartido
+│       │   ├── reports/          # Cola de moderación de reportes
 │       │   ├── roles/            # Roles
 │       │   ├── users/            # Control de usuarios y usuarios ocultos
 │       │   ├── recycle-bin.blade.php
 │       │   └── statistics.blade.php
 │       ├── api/                  # Tokens de API (Jetstream)
 │       ├── auth/                 # Login, registro, recuperar contraseña y confirmación por código
-│       ├── blog/                 # Blog público
+│       ├── blog/                 # Portada, página de cada publicación y guardados
 │       ├── components/
 │       │   ├── admin/            # Botones, campos, selector, modales, tablas, iconos, insignias…
-│       │   ├── layouts/          # Layouts del panel (admin) y de login y registro (auth)
+│       │   ├── blog/             # Tarjeta de publicación
+│       │   ├── layouts/          # Layouts del panel (admin), del blog y de login y registro (auth)
 │       │   ├── theme-script.blade.php
 │       │   └── theme-toggle.blade.php
 │       ├── emails/               # Plantillas de correo
