@@ -15,13 +15,14 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
-            ComplaintSeeder::class,
             TagSeeder::class,
             PublicationSeeder::class,
             SavedPublicationSeeder::class,
             TagPublicationSeeder::class,
             ReactionSeeder::class,
             CommentSeeder::class,
+            // After the publications: a report points at one of them
+            ComplaintSeeder::class,
         ]);
     }
 }

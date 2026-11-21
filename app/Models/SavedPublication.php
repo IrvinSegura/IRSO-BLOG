@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SavedPublication extends Model
 {
@@ -21,4 +22,9 @@ class SavedPublication extends Model
         'publication_id',
         'status',
     ];
+
+    public function publication(): BelongsTo
+    {
+        return $this->belongsTo(Publication::class);
+    }
 }

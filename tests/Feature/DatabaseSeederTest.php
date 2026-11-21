@@ -4,12 +4,16 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Complaint;
 use App\Models\Publication;
+use App\Models\Reaction;
 use App\Models\Role;
+use App\Models\SavedPublication;
 use App\Models\User;
 use Database\Seeders\CommentSeeder;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\PublicationSeeder;
+use Database\Seeders\ReactionSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -43,5 +47,8 @@ class DatabaseSeederTest extends TestCase
         $this->assertSame(16, Category::count());
         $this->assertSame(count(PublicationSeeder::SAMPLES), Publication::count());
         $this->assertSame(count(CommentSeeder::SAMPLES), Comment::count());
+        $this->assertSame(count(ReactionSeeder::SAMPLES), Reaction::count());
+        $this->assertSame(2, SavedPublication::count());
+        $this->assertSame(1, Complaint::where('status', Complaint::STATUS_PENDING)->whereNotNull('publication_id')->count());
     }
 }

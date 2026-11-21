@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -61,6 +62,66 @@ class Publication extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get the reactions readers left on the publication.
+     */
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(Reaction::class);
+    }
+
+    /**
+     * Get the saves of the publication (one per reader who kept it for later).
+     */
+    public function saves(): HasMany
+    {
+        return $this->hasMany(SavedPublication::class);
+    }
+
+    /**
+     * Get the reports readers filed about the publication.
+     */
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
+    /**
+     * Search by title, description or author name, ignoring blank terms.
+     */
+    public function scopeSearch(Builder $query, ?string $term): Builder
+    {
+        $term = trim((string) $term);
+        if ($term === '') {
+            return $query;
+        }
+
+        // No escaping of % and _: LIKE escapes differ between SQLite and MySQL, and a wildcard
+        // typed by a reader only widens their own search
+        $like = '%'.mb_substr($term, 0, 100).'%';
+
+        return $query->where(fn (Builder $q) => $q
+            ->where('title', 'like', $like)
+            ->orWhere('content', 'like', $like)
+            ->orWhereHas('user', fn (Builder $user) => $user->where('name', 'like', $like)));
+    }
+
+    /**
+     * Address of the public page; the slug only makes the link readable.
+     */
+    public function url(): string
+    {
+        return route('blog.show', [$this, $this->slug ?: Str::slug($this->title) ?: 'publicacion']);
+    }
+
+    /**
+     * Minutes it takes to read the description, at 200 words per minute.
+     */
+    protected function readingMinutes(): Attribute
+    {
+        return Attribute::get(fn () => max(1, (int) ceil(str_word_count(strip_tags((string) $this->content)) / 200)));
     }
 
     /**

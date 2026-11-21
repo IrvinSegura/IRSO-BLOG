@@ -10,3 +10,39 @@
 .dark {
     color-scheme: dark;
 }
+
+/* Cards fade up in a short cascade (set --delay per card), like the Nexus feed. */
+@layer utilities {
+    .animate-fade-up {
+        animation: fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+        animation-delay: var(--delay, 0ms);
+    }
+
+    .animate-pop {
+        animation: pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+    }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes pop {
+    50% {
+        transform: scale(1.25);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-up,
+    .animate-pop {
+        animation: none;
+    }
+}

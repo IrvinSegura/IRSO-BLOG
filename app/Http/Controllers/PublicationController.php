@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Publication;
+use App\Support\CoverImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,7 +66,7 @@ class PublicationController extends Controller
             ...$data,
             'slug' => Str::slug($data['title']),
             'status' => Publication::STATUS_PUBLISHED,
-            'src_img' => $request->file('src_img')->store('publications', 'public'),
+            'src_img' => CoverImage::store($request->file('src_img')),
         ]);
 
         return to_route('admin.publications.mine')->with('success', 'Publicación creada correctamente');
@@ -95,7 +96,7 @@ class PublicationController extends Controller
 
         if ($request->hasFile('src_img')) {
             $previous = $publication->src_img;
-            $data['src_img'] = $request->file('src_img')->store('publications', 'public');
+            $data['src_img'] = CoverImage::store($request->file('src_img'));
 
             // Seeded publications point at external URLs, which are not ours to delete.
             if (! Str::startsWith($previous, ['http://', 'https://'])) {

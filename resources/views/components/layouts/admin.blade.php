@@ -13,6 +13,8 @@
             ['label' => 'Mis publicaciones', 'route' => 'admin.publications.mine', 'icon' => 'pencil', 'active' => ['admin.publications.mine', 'admin.publications.edit'], 'show' => true],
             ['label' => 'Crear publicación', 'route' => 'admin.publications.create', 'icon' => 'plus', 'show' => true],
             ['label' => 'Categorías', 'route' => 'admin.categories.index', 'icon' => 'tag', 'show' => $user->canManageContent()],
+            ['label' => 'Reportes', 'route' => 'admin.reports.index', 'icon' => 'flag', 'show' => $user->canManageContent()],
+            ['label' => 'Guardados', 'route' => 'blog.saved', 'icon' => 'bookmark', 'show' => true],
         ],
         'Usuarios' => [
             ['label' => 'Control de usuarios', 'route' => 'admin.users.index', 'icon' => 'users', 'show' => $user->isAdmin()],

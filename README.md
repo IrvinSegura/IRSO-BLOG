@@ -20,7 +20,13 @@ Plataforma de blog hecha con **Laravel 13**, **Jetstream (Livewire)** y **Tailwi
 
 ## Características
 
-- **Blog público:** historias destacadas (las más comentadas), sección "Lo último" con la publicación más reciente primero y categorías con contador.
+- **Blog público:** historias destacadas (las más comentadas y con más reacciones), sección "Lo último" paginada y categorías con contador.
+- **Búsqueda y filtros:** busca por título, descripción o autor desde la cabecera y filtra por categoría con un clic. Los dos filtros se combinan.
+- **Página de cada publicación:** portada, tiempo de lectura, comentarios y lecturas relacionadas de la misma categoría. La dirección lleva el *slug* (`/blog/5/mi-titulo`) y corrige sola los enlaces viejos.
+- **Reacciones con emoji** (❤️ 🔥 💡 😂 👏), una por lector, al estilo de la app Nexus. Se actualizan al instante sin recargar y también funcionan sin JavaScript.
+- **Guardados:** cada lector arma su lista de lectura y la consulta en `/blog/guardados`.
+- **Reportes y moderación:** los lectores reportan una publicación con un motivo, una sola vez. Administradores y editores la revisan en **Reportes**, donde pueden descartarla, marcarla como resuelta o retirar la publicación y restaurarla después.
+- **Portadas optimizadas:** al subirlas se reducen a 1600 px y se recomprimen (JPEG, o WebP si tienen transparencia), corrigiendo la rotación de las fotos del celular.
 - **Panel de administración:** layout con menú lateral que se puede ocultar, búsqueda de usuarios, modales de confirmación, avisos tipo *toast* y paginación en español.
 - **Permisos por rol:** Administrador, Editor y Usuario. Cada rol ve solo lo que puede usar, y el servidor también bloquea el acceso.
 - **Mis publicaciones:** cada usuario crea, edita y responde los comentarios de sus propias publicaciones.
@@ -163,8 +169,9 @@ Quien se registra por su cuenta, o entra por primera vez con Google, Microsoft o
 |---|:-:|:-:|:-:|
 | Panel de inicio, blog y mi perfil | ✅ | ✅ | ✅ |
 | Mis publicaciones (crear, editar y responder comentarios) | ✅ | ✅ | ✅ |
+| Reaccionar, guardar y reportar publicaciones | ✅ | ✅ | ✅ |
 | Todas las publicaciones, editar las de otros y exportar JSON | ❌ | ✅ | ✅ |
-| Categorías y estadísticas | ❌ | ✅ | ✅ |
+| Categorías, estadísticas y reportes | ❌ | ✅ | ✅ |
 | Usuarios, usuarios ocultos, roles y papelera | ❌ | ❌ | ✅ |
 
 Los permisos se aplican en el servidor con el middleware `role` y la política `PublicationPolicy`, no solo ocultando enlaces. Quien abra una sección sin permiso ve una página **403**.
@@ -178,6 +185,14 @@ Los permisos se aplican en el servidor con el middleware `role` y la política `
 | ![Inicio de sesión](docs/screenshots/login.png) | ![Registro](docs/screenshots/registro.png) |
 
 Login y registro con correo, o con Google, Microsoft y Facebook.
+
+### Blog
+
+Todos los roles leen el blog: buscan desde la cabecera, filtran por categoría, reaccionan con emoji, guardan publicaciones para después y reportan las que no deberían estar.
+
+| Página de una publicación (reacciones, guardar, compartir, reportar y comentarios) | Guardados |
+|---|---|
+| ![Página de una publicación](docs/screenshots/blog-publicacion.png) | ![Guardados](docs/screenshots/blog-guardados.png) |
 
 ### Administrador
 
@@ -201,9 +216,13 @@ Login y registro con correo, o con Google, Microsoft y Facebook.
 
 ![Publicaciones](docs/screenshots/admin-publicaciones.png)
 
+**Reportes:** la cola de moderación con pestañas de pendientes, resueltos y descartados. Desde aquí se descarta un reporte, se marca como resuelto o se retira la publicación (y se puede restaurar después).
+
+![Reportes](docs/screenshots/admin-reportes.png)
+
 ### Editor
 
-Gestiona el contenido de todo el blog (publicaciones, categorías y estadísticas), pero no administra personas.
+Gestiona el contenido de todo el blog (publicaciones, categorías, estadísticas y reportes), pero no administra personas.
 
 | Panel del editor | Publicaciones |
 |---|---|
@@ -215,7 +234,7 @@ Si un editor intenta entrar a una sección de administrador, como `/admin/users`
 
 ### Usuario
 
-Solo ve y administra **sus propias publicaciones**. El menú lateral muestra únicamente *Panel*, *Mis publicaciones* y *Crear publicación*.
+Solo ve y administra **sus propias publicaciones**. El menú lateral muestra únicamente *Panel*, *Mis publicaciones*, *Crear publicación* y *Guardados*.
 
 | Panel del usuario | Mis publicaciones (con comentarios) |
 |---|---|
@@ -296,7 +315,7 @@ La bienvenida, el aviso de contraseña y el de comentario no detienen a quien es
 php artisan test
 ```
 
-La suite cubre la autenticación (incluido el login social), los permisos por rol, el módulo de publicaciones, los correos, la redirección a `APP_URL` y los seeders.
+La suite cubre la autenticación (incluido el login social), los permisos por rol, el módulo de publicaciones, el blog (búsqueda, reacciones, guardados, reportes y moderación), la optimización de portadas, los correos, la redirección a `APP_URL` y los seeders.
 
 ## Solución de problemas
 
@@ -321,7 +340,8 @@ IRSO-BLOG/
 │   │   └── Jetstream/            # Eliminación de cuentas
 │   ├── Http/
 │   │   ├── Controllers/          # Dashboard, Blog, Publication, Comment, Category, Role, User,
-│   │   │                         # Statistics, RecycleBin, Socialite (login social) y más
+│   │   │                         # Statistics, RecycleBin, Reaction, SavedPublication,
+│   │   │                         # Complaint (reportes), Socialite (login social) y más
 │   │   ├── Middleware/           # EnsureUserHasRole (role:admin,editor) y RedirectToCanonicalHost
 │   │   └── Responses/            # RegisterResponse: manda al blog después de registrarse
 │   ├── Livewire/                 # Navigation (barra de Jetstream)
@@ -332,6 +352,7 @@ IRSO-BLOG/
 │   ├── Notifications/            # WelcomeEmail, PasswordChanged, CommentReceived, SocialLoginCode
 │   ├── Policies/                 # PublicationPolicy: quién puede editar una publicación
 │   ├── Providers/                # AppServiceProvider, FortifyServiceProvider, JetstreamServiceProvider
+│   ├── Support/                  # CoverImage: reduce y recomprime las portadas al subirlas
 │   └── View/Components/          # AppLayout y GuestLayout
 ├── bootstrap/
 │   └── app.php                   # Rutas, middleware (alias "role") y manejo de excepciones
@@ -339,15 +360,17 @@ IRSO-BLOG/
 ├── database/
 │   ├── factories/                # UserFactory para las pruebas
 │   ├── migrations/               # Tablas de usuarios, publicaciones, categorías, roles, comentarios,
-│   │                             # reacciones, etiquetas, cuentas sociales y la unión de duplicados
-│   └── seeders/                  # Roles, categorías, cuentas demo y publicaciones de ejemplo
+│   │                             # reacciones, etiquetas, cuentas sociales, la unión de duplicados
+│   │                             # y reacciones, guardados y reportes por publicación
+│   └── seeders/                  # Roles, categorías, cuentas demo, publicaciones, reacciones,
+│                                 # guardados y un reporte de ejemplo
 ├── docs/
 │   └── screenshots/              # Imágenes de este README
 ├── public/
 │   ├── img/                      # Iconos de reacciones
 │   └── index.php                 # Punto de entrada de la aplicación
 ├── resources/
-│   ├── css/app.css               # Tailwind
+│   ├── css/app.css               # Tailwind y animaciones de las tarjetas y reacciones
 │   ├── js/
 │   │   ├── app.js
 │   │   └── statistics.js         # Gráficas del módulo de estadísticas (Chart.js)
@@ -356,16 +379,18 @@ IRSO-BLOG/
 │       ├── admin/                # Módulos del panel
 │       │   ├── categories/       # Categorías
 │       │   ├── publications/     # Todas, mis publicaciones, crear, editar y formulario compartido
+│       │   ├── reports/          # Cola de moderación de reportes
 │       │   ├── roles/            # Roles
 │       │   ├── users/            # Control de usuarios y usuarios ocultos
 │       │   ├── recycle-bin.blade.php
 │       │   └── statistics.blade.php
 │       ├── api/                  # Tokens de API (Jetstream)
 │       ├── auth/                 # Login, registro, recuperar contraseña y confirmación por código
-│       ├── blog/                 # Blog público
+│       ├── blog/                 # Portada, página de cada publicación y guardados
 │       ├── components/
 │       │   ├── admin/            # Botones, campos, selector, modales, tablas, iconos, insignias…
-│       │   ├── layouts/          # Layouts del panel (admin) y de login y registro (auth)
+│       │   ├── blog/             # Tarjeta de publicación
+│       │   ├── layouts/          # Layouts del panel (admin), del blog y de login y registro (auth)
 │       │   ├── theme-script.blade.php
 │       │   └── theme-toggle.blade.php
 │       ├── emails/               # Plantillas de correo
