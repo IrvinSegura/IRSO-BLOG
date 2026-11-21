@@ -121,6 +121,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the publications the user saved for later.
+     */
+    public function savedPublications(): HasMany
+    {
+        return $this->hasMany(SavedPublication::class);
+    }
+
+    /**
      * Send an email the user is not waiting for: if the mail server fails, the error is logged and whatever the user
      * was doing (registering, commenting...) still works.
      */
